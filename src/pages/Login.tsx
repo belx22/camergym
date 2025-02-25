@@ -23,7 +23,7 @@ export default function Login() {
           <Dumbbell className="h-12 w-12 text-blue-600" />
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          FCG Administration
+          CAMERGYM COMPETITION
         </h2>
       </div>
 
