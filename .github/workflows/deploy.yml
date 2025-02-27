@@ -3,21 +3,22 @@ name: Deploy to Shared Hosting
 on:
   push:
     branches:
-      - main  # Déclenchement sur push vers main
+      - main  # Remplacez par la branche à déployer
 
 jobs:
   deploy:
+    name: Deploy via FTP
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.1
+      - name: Deploy with FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ftp-1871.camoo.net
+          server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: /home/camerg5784/licence
+          server-dir: /home/camerg5784/licence/
