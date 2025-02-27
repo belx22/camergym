@@ -6,5 +6,5 @@ echo $projectPath;
 // Vérification de l'état du dépôt Git
 exec("git --version",$out);
 
-echo $out;
+vardump($out) ;
 ?>
