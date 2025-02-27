@@ -23,4 +23,4 @@ jobs:
               
 
           local-dir: ./
-          server-dir: ./
+          server-dir: /
