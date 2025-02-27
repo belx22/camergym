@@ -8,16 +8,13 @@ $githubRepo = "https://belx22:github_pat_11AGK2XLQ0FXNuhd0LbMZW_BQV9XUQDSv8mz6hx
 echo 'AAAAAAA';
 // Fonction pour exécuter une commande shell et récupérer le retour
 function runCommand($command) {
-    global $logFile;
+    echo "Exécution : $command\n";
     $output = [];
     $status = 0;
     exec($command . " 2>&1", $output, $status);
-    
-    $logMessage = date("Y-m-d H:i:s") . " - CMD: $command\n" . implode("\n", $output) . "\n";
-    file_put_contents($logFile, $logMessage, FILE_APPEND);
-    
-    return $status === 0;
+    echo implode("\n", $output) . "\n";
 }
+
 
 // Aller dans le dossier du projet
 chdir($repoDir);
