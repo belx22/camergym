@@ -1,5 +1,5 @@
 <?php
-
+echo 'lancement ';
 // Chemin du projet
 $repoDir = "."; // Remplacez par votre chemin réel
 $branch = "main"; // Assurez-vous que c'est bien la branche principale
