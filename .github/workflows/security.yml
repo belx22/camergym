@@ -1,27 +1,27 @@
-name: Sécurité - Vérification des vulnérabilités
+name: SonarQube Analysis
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  security:
+  sonar:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Vérifier le code source
+    - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Exécuter l'analyse de vulnérabilités avec CodeQL
-      uses: github/codeql-action/init@v3
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
       with:
-        languages: 'php' 
-      
-    - name: Lancer l'analyse CodeQL
-      uses: github/codeql-action/analyze@v3
-      with:
-        output: results
+        php-version: '8.0'
+
+    - name: Install dependencies
+      run: |
+        composer install
+
+    - name: Run SonarQube scan
+      run: |
+        sonar-scanner
