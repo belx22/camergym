@@ -21,8 +21,6 @@ if ($zip->open($zipFile) === TRUE) {
 }
 
 // Étape 2 : Supprimer le fichier ZIP après extraction
-unlink($zipFile);
-echo "🗑️ Fichier ZIP supprimé après extraction.\n";
 
 // Étape 3 : Installer les dépendances avec Composer
 
