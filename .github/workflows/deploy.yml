@@ -20,6 +20,7 @@ jobs:
           server: "${{ secrets.secrets.FTP_SERVER }}"
           username: "${{ secrets.secrets.FTP_USERNAME }}"
           password: "${{ secrets.secrets.FTP_PASSWORD }}"
+              
 
           local-dir: ./
           server-dir: ./
