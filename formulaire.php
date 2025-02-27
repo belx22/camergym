@@ -1,47 +1,44 @@
 <?php
 
-$zipFile = "isgemo.zip"; // Nom du fichier ZIP contenant ton projet Laravel
-$projectName = "isgemo"; // Nom du dossier où sera extrait Laravel
-$projectPath = __DIR__ . "/$projectName";
+// Chemin du projet
+$repoDir = "/"; // Remplacez par votre chemin réel
+$branch = "main"; // Assurez-vous que c'est bien la branche principale
+$logFile = $repoDir . "/sync-log.txt"; // Fichier pour suivre les actions
 
-// Vérifier si le fichier ZIP existe
-if (!file_exists($zipFile)) {
-    die("❌ Le fichier $zipFile n'existe pas. Téléverse-le sur le serveur.\n");
+// Exécuter une commande shell et capturer la sortie
+function runCommand($command) {
+    global $logFile;
+    $output = [];
+    $status = 0;
+    exec($command . " 2>&1", $output, $status);
+    file_put_contents($logFile, date("Y-m-d H:i:s") . " - " . implode("\n", $output) . "\n", FILE_APPEND);
+    return $status === 0;
 }
 
-// Étape 1 : Extraire le fichier ZIP
-echo "📦 Extraction de $zipFile...\n";
-$zip = new ZipArchive;
-if ($zip->open($zipFile) === TRUE) {
-    $zip->extractTo(__DIR__);
-    $zip->close();
-    echo "✅ Extraction terminée !\n";
+// Se déplacer dans le dossier du projet
+chdir($repoDir);
+
+// Vérifier si des fichiers ont été modifiés
+$hasChanges = trim(shell_exec("git status --porcelain"));
+
+if ($hasChanges) {
+    file_put_contents($logFile, date("Y-m-d H:i:s") . " - Modifications détectées\n", FILE_APPEND);
+
+    // Ajouter tous les fichiers modifiés
+    runCommand("git add .");
+
+    // Faire un commit
+    $commitMessage = "Mise à jour automatique depuis le serveur - " . date("Y-m-d H:i:s");
+    runCommand("git commit -m \"$commitMessage\"");
+
+    // Pousser vers GitHub
+    if (runCommand("git push origin $branch")) {
+        file_put_contents($logFile, date("Y-m-d H:i:s") . " - Push réussi sur GitHub\n", FILE_APPEND);
+    } else {
+        file_put_contents($logFile, date("Y-m-d H:i:s") . " - Erreur lors du push\n", FILE_APPEND);
+    }
 } else {
-    die("❌ Échec de l'extraction du fichier ZIP.\n");
+    file_put_contents($logFile, date("Y-m-d H:i:s") . " - Aucune modification détectée\n", FILE_APPEND);
 }
 
-// Étape 2 : Supprimer le fichier ZIP après extraction
-
-// Étape 3 : Installer les dépendances avec Composer
-
-
-// Étape 4 : Copier le fichier .env et générer la clé Laravel
-echo "🛠 Configuration de l'environnement...\n";
-copy("$projectPath/.env.example", "$projectPath/.env");
-exec("cd $projectPath && php artisan key:generate");
-
-// Étape 5 : Configurer les permissions
-echo "🔑 Configuration des permissions...\n";
-exec("chmod -R 775 $projectPath/storage $projectPath/bootstrap/cache");
-
-// Étape 6 : Exécuter les migrations
-echo "📊 Exécution des migrations...\n";
-exec("cd $projectPath && php artisan migrate --force");
-
-// Étape 7 : Nettoyage du cache et des sessions
-echo "🧹 Nettoyage des caches...\n";
-exec("cd $projectPath && php artisan config:cache && php artisan route:cache && php artisan view:cache");
-
-// Message final
-echo "\n🎉 Déploiement réussi ! Accédez à votre site via : https://votre-domaine.com/$projectName/public\n";
 ?>
