@@ -1,7 +1,7 @@
 <?php
 
 // 📌 Configuration
-$repoDir = "/";  // 🔴 Remplace avec le chemin réel de ton projet
+$repoDir = "";  // 🔴 Remplace avec le chemin réel de ton projet
 $branch = "main"; // 🔴 Assure-toi d'utiliser la bonne branche
 $logFile = $repoDir . "/git-sync.log"; // 🔴 Fichier log pour suivre l'exécution
 $githubRepo = "https://belx22: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@github.com/belx22/camergym.git"; // 🔴 Remplace <TOKEN> par ton token GitHub
