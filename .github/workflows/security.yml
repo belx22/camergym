@@ -1,0 +1,27 @@
+name: Sécurité - Vérification des vulnérabilités
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Vérifier le code source
+      uses: actions/checkout@v2
+
+    - name: Exécuter l'analyse de vulnérabilités avec CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: 'php' # Remplacer par votre langage (python, javascript, java, etc.)
+      
+    - name: Lancer l'analyse CodeQL
+      uses: github/codeql-action/analyze@v2
+      with:
+        output: results
