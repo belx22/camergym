@@ -17,11 +17,11 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Exécuter l'analyse de vulnérabilités avec CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
-        languages: 'php' # Remplacer par votre langage (python, javascript, java, etc.)
+        languages: 'php' 
       
     - name: Lancer l'analyse CodeQL
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
       with:
         output: results
