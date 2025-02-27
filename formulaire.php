@@ -1,7 +1,7 @@
 <?php
 
 // Chemin du projet
-$repoDir = "/"; // Remplacez par votre chemin réel
+$repoDir = "."; // Remplacez par votre chemin réel
 $branch = "main"; // Assurez-vous que c'est bien la branche principale
 $logFile = $repoDir . "/sync-log.txt"; // Fichier pour suivre les actions
 
