@@ -25,12 +25,7 @@ unlink($zipFile);
 echo "🗑️ Fichier ZIP supprimé après extraction.\n";
 
 // Étape 3 : Installer les dépendances avec Composer
-echo "📥 Installation des dépendances...\n";
-exec("cd $projectPath && composer install --no-dev --optimize-autoloader", $output, $returnVar);
-if ($returnVar !== 0) {
-    die("❌ Échec de l'installation des dépendances.\n");
-}
-echo "✅ Dépendances installées !\n";
+
 
 // Étape 4 : Copier le fichier .env et générer la clé Laravel
 echo "🛠 Configuration de l'environnement...\n";
