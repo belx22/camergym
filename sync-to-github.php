@@ -1,11 +1,11 @@
 <?php
-echo 'lancement ';
-// Chemin du projet
-$repoDir = "."; // Remplacez par votre chemin réel
-$branch = "main"; // Assurez-vous que c'est bien la branche principale
-$logFile = $repoDir . "/sync-log.txt"; // Fichier pour suivre les actions
 
-// Exécuter une commande shell et capturer la sortie
+// Configuration
+$repoDir = "/";  // Remplacez par le chemin de votre projet
+$branch = "main"; // Branche Git à utiliser
+$logFile = $repoDir . "/sync-log.txt";  // Fichier journal
+
+// Fonction pour exécuter une commande et capturer la sortie
 function runCommand($command) {
     global $logFile;
     $output = [];
@@ -15,10 +15,8 @@ function runCommand($command) {
     return $status === 0;
 }
 
-// Se déplacer dans le dossier du projet
+// Vérifier les modifications
 chdir($repoDir);
-
-// Vérifier si des fichiers ont été modifiés
 $hasChanges = trim(shell_exec("git status --porcelain"));
 
 if ($hasChanges) {
@@ -27,7 +25,7 @@ if ($hasChanges) {
     // Ajouter tous les fichiers modifiés
     runCommand("git add .");
 
-    // Faire un commit
+    // Créer un commit
     $commitMessage = "Mise à jour automatique depuis le serveur - " . date("Y-m-d H:i:s");
     runCommand("git commit -m \"$commitMessage\"");
 
