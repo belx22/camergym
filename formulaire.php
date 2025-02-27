@@ -2,10 +2,10 @@
 
 
 // Exemple : vider le cache
-exec('composer create-project --prefer-dist laravel/laravel nom_du_projet');
+exec('cd projet/');
 
 // Exemple : exécuter une migration
-exec('php artisan migrate --force');
+exec('php artisan serve');
 
 echo "Déploiement terminé";
 ?>
