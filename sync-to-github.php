@@ -4,7 +4,7 @@ $projectPath = __DIR__; // Changez si besoin
 
 echo $projectPath;
 // Vérification de l'état du dépôt Git
-exec("sudo apt install git -y");
+exec("git --version",$out);
 
-echo 'terminez \n";
+echo $out;
 ?>
