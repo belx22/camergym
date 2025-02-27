@@ -1,27 +1,31 @@
-name: SonarQube Analysis
+name: PHP CI
 
 on:
   push:
     branches:
+      - main  # ou la branche sur laquelle vous souhaitez déclencher l'action
+  pull_request:
+    branches:
       - main
 
 jobs:
-  sonar:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.0'
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'  # Remplacez par la version PHP souhaitée
+          extensions: mbstring, intl  # Liste des extensions PHP que vous voulez installer
 
-    - name: Install dependencies
-      run: |
-        composer install
+      - name: Install dependencies
+        run: |
+          composer install --no-progress --prefer-dist
 
-    - name: Run SonarQube scan
-      run: |
-        sonar-scanner
+      - name: Run PHPUnit tests
+        run: |
+          vendor/bin/phpunit --coverage-text
