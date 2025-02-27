@@ -1,41 +1,53 @@
 <?php
 
-// Définir les variables
-$projectName = "app";
+$zipFile = "isgemo.zip"; // Nom du fichier ZIP contenant ton projet Laravel
+$projectName = "isgemo"; // Nom du dossier où sera extrait Laravel
 $projectPath = __DIR__ . "/$projectName";
 
-// Étape 1 : Télécharger Laravel avec Composer
-if (!is_dir($projectPath)) {
-    echo "📥 Téléchargement de Laravel...\n";
-    exec("composer create-project --prefer-dist laravel/laravel $projectName", $output, $returnVar);
-    if ($returnVar !== 0) {
-        die("❌ Échec du téléchargement de Laravel.\n");
-    }
-    echo "✅ Laravel installé avec succès !\n";
-} else {
-    echo "ℹ️ Le dossier $projectName existe déjà. Passons à l'étape suivante.\n";
+// Vérifier si le fichier ZIP existe
+if (!file_exists($zipFile)) {
+    die("❌ Le fichier $zipFile n'existe pas. Téléverse-le sur le serveur.\n");
 }
 
-// Étape 2 : Configurer l'environnement (.env)
+// Étape 1 : Extraire le fichier ZIP
+echo "📦 Extraction de $zipFile...\n";
+$zip = new ZipArchive;
+if ($zip->open($zipFile) === TRUE) {
+    $zip->extractTo(__DIR__);
+    $zip->close();
+    echo "✅ Extraction terminée !\n";
+} else {
+    die("❌ Échec de l'extraction du fichier ZIP.\n");
+}
+
+// Étape 2 : Supprimer le fichier ZIP après extraction
+unlink($zipFile);
+echo "🗑️ Fichier ZIP supprimé après extraction.\n";
+
+// Étape 3 : Installer les dépendances avec Composer
+echo "📥 Installation des dépendances...\n";
+exec("cd $projectPath && composer install --no-dev --optimize-autoloader", $output, $returnVar);
+if ($returnVar !== 0) {
+    die("❌ Échec de l'installation des dépendances.\n");
+}
+echo "✅ Dépendances installées !\n";
+
+// Étape 4 : Copier le fichier .env et générer la clé Laravel
 echo "🛠 Configuration de l'environnement...\n";
 copy("$projectPath/.env.example", "$projectPath/.env");
 exec("cd $projectPath && php artisan key:generate");
 
-// Étape 3 : Installer les dépendances
-echo "📦 Installation des dépendances...\n";
-exec("cd $projectPath && composer install");
-
-// Étape 4 : Configurer les permissions (important sur un mutualisé)
+// Étape 5 : Configurer les permissions
 echo "🔑 Configuration des permissions...\n";
 exec("chmod -R 775 $projectPath/storage $projectPath/bootstrap/cache");
 
-// Étape 5 : Exécuter les migrations de la base de données
+// Étape 6 : Exécuter les migrations
 echo "📊 Exécution des migrations...\n";
 exec("cd $projectPath && php artisan migrate --force");
 
-// Étape 6 : Démarrer Laravel (uniquement si vous avez un accès SSH et pouvez exécuter PHP)
-echo "🚀 Déploiement terminé !\n";
-echo "Votre application Laravel est prête.\n";
+// Étape 7 : Nettoyage du cache et des sessions
+echo "🧹 Nettoyage des caches...\n";
+exec("cd $projectPath && php artisan config:cache && php artisan route:cache && php artisan view:cache");
 
 // Message final
 echo "\n🎉 Déploiement réussi ! Accédez à votre site via : https://votre-domaine.com/$projectName/public\n";
