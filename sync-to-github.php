@@ -4,7 +4,7 @@ $projectPath = __DIR__; // Changez si besoin
 
 echo $projectPath;
 // Vérification de l'état du dépôt Git
-exec("cd $projectPath && git status --porcelain", $output);
+exec("sudo apt install git -y");
 
-echo $output;
+echo 'terminez \n";
 ?>
