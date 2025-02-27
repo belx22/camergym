@@ -1,54 +1,50 @@
-o<?php
+<?php
 
-// 📌 Configuration
-$repoDir = "/";  // 🔴 Remplace avec le chemin réel de ton projet
-$branch = "main"; // 🔴 Assure-toi d'utiliser la bonne branche
-$logFile = $repoDir . "/git-sync.log"; // 🔴 Fichier log pour suivre l'exécution
-$githubRepo = "https://belx22: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
-@github.com/belx22/camergym.git"; // 🔴 Remplace <TOKEN> par ton token GitHub
-echo 'AAAAAAA';
-// Fonction pour exécuter une commande shell et récupérer le retour
-function runCommand($command) {
-    echo "Exécution : $command\n";
-    $output = [];
-    $status = 0;
-    exec($command . " 2>&1", $output, $status);
-    echo implode("\n", $output) . "\n";
+// Configuration
+$projectPath = __DIR__;  // Chemin du projet
+$logFile = $projectPath . "/git_auto_push.log";  // Fichier de logs
+$adminEmail = "bellofidele@gmail.com";  // Remplace avec ton e-mail
+
+// Fonction pour enregistrer les logs
+function logMessage($message) {
+    global $logFile;
+    $timestamp = date("Y-m-d H:i:s");
+    file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
 }
 
+// Vérification des changements
+exec("cd $projectPath && git status --porcelain", $output);
 
-// Aller dans le dossier du projet
-chdir($repoDir);
+if (!empty($output)) {
+    logMessage("🔍 Changements détectés : " . implode(", ", $output));
 
-// Vérifier si le dépôt Git est bien configuré
-$remoteCheck = trim(shell_exec("git remote -v"));
+    // Ajout des fichiers modifiés
+    exec("cd $projectPath && git add .");
 
-if (strpos($remoteCheck, "github.com/belx22/camergym.git") === false) {
-    file_put_contents($logFile, date("Y-m-d H:i:s") . " - 🚀 Ajout du dépôt GitHub...\n", FILE_APPEND);
-    runCommand("git remote add origin $githubRepo");
-}
+    // Récupérer la date et l'heure pour un message de commit
+    $commitMessage = "Auto-commit: " . date("Y-m-d H:i:s");
 
-// Vérifier l'état des fichiers
-$hasChanges = trim(shell_exec("git status --porcelain"));
+    // Commit des changements
+    exec("cd $projectPath && git commit -m \"$commitMessage\"");
 
-if (!empty($hasChanges)) {
-    file_put_contents($logFile, date("Y-m-d H:i:s") . " - 🔄 Des modifications détectées\n", FILE_APPEND);
+    // Pousser sur le dépôt distant
+    exec("cd $projectPath && git push origin main 2>&1", $pushOutput, $returnCode);
 
-    // Ajouter tous les fichiers modifiés
-    runCommand("git add .");
+    if ($returnCode === 0) {
+        logMessage("✅ Modifications poussées avec succès sur Git.");
+        
+        // Envoi d'un e-mail de notification
+        $subject = "Notification Git : Commit Auto";
+        $message = "Les changements ont été poussés avec succès sur le repo.\n\nDétails :\n" . implode("\n", $output);
+        $headers = "From: noreply@example.com";  // Remplace avec ton domaine
 
-    // Faire un commit avec un message
-    $commitMessage = "🔄 Auto-sync depuis serveur - " . date("Y-m-d H:i:s");
-    runCommand("git commit -m \"$commitMessage\"");
-
-    // Pousser vers GitHub
-    if (runCommand("git push origin $branch")) {
-        file_put_contents($logFile, date("Y-m-d H:i:s") . " - ✅ Push réussi sur GitHub\n", FILE_APPEND);
+        mail($adminEmail, $subject, $message, $headers);
+        logMessage("📧 Notification envoyée à $adminEmail.");
     } else {
-        file_put_contents($logFile, date("Y-m-d H:i:s") . " - ❌ Erreur lors du push\n", FILE_APPEND);
+        logMessage("❌ Erreur lors du push sur Git : " . implode("\n", $pushOutput));
     }
 } else {
-    file_put_contents($logFile, date("Y-m-d H:i:s") . " - ✅ Aucun changement détecté\n", FILE_APPEND);
+    logMessage("ℹ️ Aucune modification détectée.");
 }
 
 ?>
